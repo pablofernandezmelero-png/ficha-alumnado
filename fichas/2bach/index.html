@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>PULSE · Living Well</title>
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' blob: data:; connect-src https://kqwatdxzgfrssgcwexvv.supabase.co; form-action 'none'; base-uri 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' blob: data:; connect-src 'self' https://kqwatdxzgfrssgcwexvv.supabase.co; form-action 'none'; base-uri 'none'">
 <script>if("https://pablofernandezmelero-png.github.io"!==location.origin||window.top!==window.self)throw document.documentElement.textContent="Esta no es la web oficial.",new Error("origen");</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
@@ -25,5 +25,6 @@
 <div class="toast glass" id="toast" role="status" aria-live="polite"></div>
 <script src="js/config.js"></script>
 <script src="js/app.js"></script>
+<script>window.__xpToast=function(t){if(t&&"number"==typeof t.hoy){var e=document.createElement("div");e.setAttribute("role","status"),e.style.cssText="position:fixed;left:50%;bottom:70px;transform:translateX(-50%);z-index:2147483646;background:#0f172a;color:#fff;padding:.55rem .9rem;border-radius:.6rem;font:600 14px system-ui,sans-serif;box-shadow:0 4px 18px rgba(0,0,0,.35);max-width:90vw;text-align:center",e.textContent="XP saved ✓ today: "+t.hoy+" · total: "+t.total,document.body.appendChild(e),setTimeout(function(){e.remove()},4500)}};</script>
 </body>
 </html>
