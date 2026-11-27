@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; connect-src https://kqwatdxzgfrssgcwexvv.supabase.co https://api.pwnedpasswords.com; style-src 'unsafe-inline'; script-src 'unsafe-inline' https://challenges.cloudflare.com; frame-src https://challenges.cloudflare.com; base-uri 'none'; form-action 'none'">
+<title>Panel del profesorado</title>
+<style>
+  :root { color-scheme: light dark; font-family: system-ui, sans-serif; }
+  body { max-width: 62rem; margin: 2rem auto; padding: 0 1rem; }
+  h1 { font-size: 1.4rem; } h2 { font-size: 1.1rem; margin-top: 1.5rem; }
+  label { display: block; margin: .6rem 0 .2rem; font-size: .9rem; }
+  input, select { padding: .5rem; font-size: 1rem; min-width: 16rem; max-width: 100%; box-sizing: border-box; }
+  button { padding: .5rem 1rem; font-size: .95rem; cursor: pointer; margin: .4rem .4rem 0 0; }
+  button.peligro { border-color: #c0392b; }
+  .tabs button[aria-selected="true"] { font-weight: 700; border-width: 2px; }
+  .msg { margin-top: 1rem; padding: .6rem; border: 1px solid; border-radius: .4rem; }
+  .bad { border-color: #c0392b; } .ok { border-color: #2e8b57; }
+  table { border-collapse: collapse; width: 100%; margin-top: 1rem; font-size: .92rem; }
+  th, td { border: 1px solid #8884; padding: .35rem .5rem; text-align: left; vertical-align: middle; }
+  td.n, th.n { text-align: right; }
+  .small { font-size: .85rem; opacity: .8; }
+  .tag { font-size: .8rem; padding: .1rem .4rem; border: 1px solid; border-radius: .3rem; }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<h1>Panel del profesorado</h1>
+<section id="s-login">
+  <label for="correo">Correo</label>
+  <input id="correo" type="email" autocomplete="username">
+  <label for="clave">Contraseña</label>
+  <input id="clave" type="password" autocomplete="current-password">
+  <div id="captcha"></div>
+  <div><button id="entrar" type="button">Entrar</button></div>
+</section>
+<section id="s-crear" hidden>
+  <p>Primera vez: crea tu <b>código de profesor</b>. Se pedirá cada vez que entres. Mínimo 8 caracteres. Guárdalo: no se puede ver después.</p>
+  <label for="cod1">Código de profesor</label>
+  <input id="cod1" type="password" autocomplete="new-password" maxlength="40">
+  <label for="cod2">Repite el código</label>
+  <input id="cod2" type="password" autocomplete="off" maxlength="40">
+  <div><button id="crear" type="button">Guardar código</button></div>
+</section>
+<section id="s-confirm" hidden>
+  <p>Crea tu <b>clave de confirmación</b>. Se pedirá solo para acciones muy fuertes (eliminar alumnos). Debe ser distinta del código de profesor. Mínimo 8 caracteres. No se puede ver después.</p>
+  <label for="cf1">Clave de confirmación</label>
+  <input id="cf1" type="password" autocomplete="new-password" maxlength="40">
+  <label for="cf2">Repite la clave</label>
+  <input id="cf2" type="password" autocomplete="off" maxlength="40">
+  <div><button id="crear-cf" type="button">Guardar clave</button></div>
+</section>
+<section id="s-codigo" hidden>
+  <label for="cod">Código de profesor</label>
+  <input id="cod" type="password" autocomplete="off" maxlength="40">
+  <div><button id="verificar" type="button">Verificar</button></div>
+</section>
+<section id="s-panel" hidden>
+  <div class="tabs" role="tablist">
+    <button id="t-informe" role="tab" aria-selected="true" type="button">Informe</button>
+    <button id="t-alumnos" role="tab" aria-selected="false" type="button">Alumnos</button>
+    <button id="t-apartados" role="tab" aria-selected="false" type="button">Apartados</button>
+    <button id="salir" type="button">Salir</button>
+  </div>
+  <label for="clase">Clase</label>
+  <select id="clase">
+    <option>2SMRB-INGLES</option>
+    <option>2SMRC-INGLES</option>
+    <option>2DAM</option>
+    <option>1B COMERCIO INTERNACIONAL</option>
+    <option>1 TRANSPORTE Y LOGISTICA</option>
+    <option>2º BACHILLERATO J</option>
+  </select>
+  <div id="v-informe">
+    <div><button id="generar" type="button">Ejecutar informe</button><button id="csv" type="button" hidden>Descargar CSV</button></div>
+    <p id="aviso" class="small"></p><div id="resumen"></div>
+    <table id="tabla-informe" hidden><thead><tr>
+      <th>Alumno</th><th class="n">Bits</th><th class="n">EXP</th><th class="n">Insignias</th><th class="n">Intentos</th>
+      <th class="n">Aciertos</th><th class="n">Fallos</th><th class="n">% acierto</th><th>Última actividad</th>
+    </tr></thead><tbody></tbody></table>
+    <p class="small">Bits = actividades completadas. EXP = experiencia ganada. Aciertos y fallos salen de las puntuaciones guardadas.</p>
+  </div>
+  <div id="v-alumnos" hidden>
+    <div><button id="cargar-alumnos" type="button">Ver alumnos</button></div>
+    <table id="tabla-alumnos" hidden><thead><tr>
+      <th>Nombre</th><th>Correo</th><th>Código</th><th>Estado</th><th>Acciones</th>
+    </tr></thead><tbody></tbody></table>
+    <p class="small">Bloquear: el alumno no puede ver la ficha ni guardar. Eliminar: borra su cuenta y todo su trabajo y no se puede deshacer.</p>
+  </div>
+  <div id="v-apartados" hidden>
+    <div><button id="cargar-apartados" type="button">Ver apartados</button></div>
+    <div id="lista-apartados"></div>
+    <p class="small">Un apartado bloqueado impide guardar en esa sesión. Si desactivas la ficha completa, nadie de la clase puede verla ni guardar.</p>
+  </div>
+</section>
+<div id="msg" class="msg" hidden role="status"></div>
+<script>!function(){"use strict";if("https://pablofernandezmelero-png.github.io"!==location.origin||window.top!==window.self)throw document.body.textContent="Esta no es la web oficial.",new Error("origen");var a="sb_publishable_pD45Pp03c048X22Dqfmthg_6-OdU5oO",n=null,e=[],t="",o=function(a){return document.getElementById(a)};function r(a,n){var e=o("msg");e.textContent=a||"",e.className="msg "+(n||""),e.hidden=!a}var c="0x4AAAAAAGWADCbQT_Q1M6fK",i=null,d=[6e4,3e5,9e5,36e5];function u(a){var n={n:0,hasta:0,r:0};function e(a){a&&"object"==typeof a&&(n.n=Math.max(n.n,0|a.n),n.hasta=Math.max(n.hasta,+a.hasta||0),n.r=Math.max(n.r,0|a.r))}e(i);try{e(JSON.parse(localStorage.getItem(a)))}catch(a){}try{e(JSON.parse(sessionStorage.getItem(a)))}catch(a){}try{var t=document.cookie.match(new RegExp("(?:^|; )"+a+"=([^;]*)"));t&&e(JSON.parse(decodeURIComponent(t[1])))}catch(a){}try{0===window.name.indexOf(a+"=")&&e(JSON.parse(window.name.slice(a.length+1)))}catch(a){}return n}function l(a,n){i=n;var e=JSON.stringify(n);try{localStorage.setItem(a,e)}catch(a){}try{sessionStorage.setItem(a,e)}catch(a){}try{document.cookie=a+"="+encodeURIComponent(e)+"; max-age=86400; path=/; SameSite=Strict; Secure"}catch(a){}try{window.name=a+"="+e}catch(a){}}var s=null,f=null;function p(n,e,t,o){return fetch("https://kqwatdxzgfrssgcwexvv.supabase.co"+n,{method:o||"POST",headers:{apikey:a,"Content-Type":"application/json",Authorization:"Bearer "+(t||a)},body:"GET"===o?void 0:JSON.stringify(e||{})}).then(function(a){return a.json().catch(function(){return null}).then(function(n){return{ok:a.ok,status:a.status,data:n}})})}function h(a,e){return p("/rest/v1/rpc/"+a,e,n)}function m(a,n,e){var t=document.createElement(a);return null!=n&&(t.textContent=String(n)),e&&(t.className=e),t}function v(a,n,e){var t=m("td",null==n?"—":n,e);return a.appendChild(t),t}function b(a){for(;a.firstChild;)a.removeChild(a.firstChild)}function g(a){["s-login","s-crear","s-confirm","s-codigo","s-panel"].forEach(function(n){o(n).hidden=n!==a})}function _(){return o("clase").value}!function(){var a=document.getElementById("captcha");if(a){var n=document.createElement("script");n.src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit",n.async=!0,n.onload=function(){f=window.turnstile.render(a,{sitekey:c,callback:function(a){s=a},"expired-callback":function(){s=null}})},document.head.appendChild(n)}}();var k="fa_bloqueo_prof";function C(){return(a=u(k)).hasta>Date.now()?Math.ceil((a.hasta-Date.now())/1e3):0;var a}function w(){return h("profesor_estado",{}).then(function(a){var e=a.data||{};return e.es_profesor?e.tiene_codigo?e.verificado?e.tiene_confirmacion?(g("s-panel"),void r("")):(g("s-confirm"),r("")):(g("s-codigo"),r("")):(g("s-crear"),r("")):(n=null,g("s-login"),r("Esta cuenta no es de profesorado.","bad"))})}function y(a){["informe","alumnos","apartados"].forEach(function(n){o("v-"+n).hidden=n!==a,o("t-"+n).setAttribute("aria-selected",n===a)}),r("")}function E(a){return!!(401===a.status||403===a.status||a.data&&"42501"===a.data.code)&&(g("s-codigo"),r("Tu verificación ha caducado. Vuelve a escribir el código.","bad"),!0)}function N(a){a||r("Cargando…"),h("prof_listar_alumnos",{p_clase:_()}).then(function(n){if(!E(n)){if(!n.ok)return r("No se pudo cargar.","bad");var e,t;e=n.data||[],b(t=o("tabla-alumnos").tBodies[0]),e.forEach(function(a){var n=m("tr");v(n,a.nombre),v(n,a.email),v(n,a.codigo_alumno),v(n,"").appendChild(m("span",a.bloqueado?"Bloqueado":"Activo","tag"));var e=v(n,""),o=m("button",a.bloqueado?"Desbloquear":"Bloquear");o.type="button",o.onclick=function(){h("prof_bloquear_alumno",{p_user:a.auth_user_id,p_bloquear:!a.bloqueado}).then(function(a){if(!E(a))return a.ok?void N():r("No se pudo cambiar.","bad")})};var c=m("button","Eliminar","peligro");c.type="button",c.onclick=function(){c.hidden=!0,o.hidden=!0;var n=m("input");n.placeholder="Escribe "+(a.codigo_alumno||"ELIMINAR")+" para confirmar",n.setAttribute("aria-label","Confirmación");var t=m("input");t.type="password",t.autocomplete="off",t.maxLength=40,t.placeholder="Tu clave de confirmación",t.setAttribute("aria-label","Clave de confirmación");var i=m("button","Eliminar definitivamente","peligro");i.type="button";var d=m("button","Cancelar");d.type="button",d.onclick=function(){N()},i.onclick=function(){if(n.value.trim()!==(a.codigo_alumno||"ELIMINAR"))return r("La confirmación no coincide.","bad");if(!t.value)return r("Escribe tu clave de confirmación.","bad");var e=t.value;t.value="",h("prof_eliminar_alumno_seguro",{p_user:a.auth_user_id,p_clave:e}).then(function(a){if(!E(a)){if(!a.ok||!a.data||!0!==a.data.ok)return r(a.data&&a.data.mensaje||"No se pudo eliminar.","bad");r("Alumno eliminado.","ok"),N(!0)}})},e.appendChild(n),e.appendChild(t),e.appendChild(i),e.appendChild(d)},e.appendChild(o),e.appendChild(c),t.appendChild(n)}),o("tabla-alumnos").hidden=!e.length,a||r((n.data||[]).length?"":"Todavía no hay alumnos en esta clase.")}}).catch(function(){r("No se pudo conectar.","bad")})}o("entrar").onclick=function(){var a=o("correo").value.trim().toLowerCase(),e=o("clave").value;if(!a||!e)return r("Escribe correo y contraseña.","bad");var t,i=C();if(i)return r("Demasiados intentos. Espera "+i+" segundos.","bad");(s||(r("Completa la verificación de seguridad.","bad"),0))&&(o("entrar").disabled=!0,r("Un momento…"),p("/auth/v1/token?grant_type=password",(t={email:a,password:e},c&&(t.gotrue_meta_security={captcha_token:s}),t)).then(function(a){return o("clave").value="",a.ok&&a.data&&a.data.access_token?(l(k,{n:0,hasta:0,r:0}),n=a.data.access_token,w()):(function(){if(s=null,c&&window.turnstile&&null!==f)try{window.turnstile.reset(f)}catch(a){}}(),function(){var a,n;(n=u(a=k)).hasta&&n.hasta<=Date.now()&&(n={n:0,hasta:0,r:n.r}),n.n+=1,n.n>=3&&(n={n:0,hasta:Date.now()+d[Math.min(n.r,3)],r:n.r+1}),l(a,n)}(),r(C()?"Demasiados intentos. Espera "+C()+" segundos.":"Correo o contraseña incorrectos.","bad"))}).catch(function(){r("No se pudo conectar.","bad")}).then(function(){o("entrar").disabled=!1}))},o("crear").onclick=function(){var a=o("cod1").value,n=o("cod2").value;return a.length<8?r("El código debe tener al menos 8 caracteres.","bad"):a!==n?r("Los dos códigos no coinciden.","bad"):void h("profesor_fijar_codigo",{p_codigo:a}).then(function(a){if(o("cod1").value="",o("cod2").value="",!a.ok||!a.data||!0!==a.data.ok)return r(a.data&&a.data.mensaje||"No se pudo guardar.","bad");g("s-confirm"),r("Código guardado. Ahora crea la clave de confirmación.","ok")}).catch(function(){r("No se pudo conectar.","bad")})},o("crear-cf").onclick=function(){var a=o("cf1").value,n=o("cf2").value;return a.length<8?r("La clave debe tener al menos 8 caracteres.","bad"):a!==n?r("Las dos claves no coinciden.","bad"):void h("profesor_fijar_confirmacion",{p_clave:a}).then(function(a){if(o("cf1").value="",o("cf2").value="",!a.ok||!a.data||!0!==a.data.ok)return r(a.data&&a.data.mensaje||"No se pudo guardar.","bad");g("s-panel"),r("Clave guardada. Recuérdala: se pedirá al eliminar alumnos.","ok")}).catch(function(){r("No se pudo conectar.","bad")})},o("verificar").onclick=function(){var a=o("cod").value;if(!a)return r("Escribe tu código de profesor.","bad");h("profesor_verificar",{p_codigo:a}).then(function(a){return o("cod").value="",a.ok&&a.data&&!0===a.data.ok?w():r(a.data&&a.data.mensaje||"Código incorrecto.","bad")}).catch(function(){r("No se pudo conectar.","bad")})},o("salir").onclick=function(){n&&p("/auth/v1/logout",{},n).catch(function(){}),n=null,location.reload()},o("t-informe").onclick=function(){y("informe")},o("t-alumnos").onclick=function(){y("alumnos")},o("t-apartados").onclick=function(){y("apartados")},o("generar").onclick=function(){t=_(),r("Generando…"),h("informe_clase",{p_clase:t}).then(function(a){if(!E(a)){if(!a.ok)return r("No se pudo generar el informe.","bad");var n=a.data||{};e=n.alumnos||[],o("aviso").textContent=n.aviso||"",o("resumen").textContent=n.resumen?"Alumnos: "+n.resumen.alumnos+" · EXP total: "+n.resumen.exp_total+" · Bits totales: "+n.resumen.bits_total:"";var t=o("tabla-informe").tBodies[0];b(t),e.forEach(function(a){var n=m("tr");v(n,a.alumno),v(n,a.bits,"n"),v(n,a.exp,"n"),v(n,a.insignias,"n"),v(n,a.intentos,"n"),v(n,a.aciertos,"n"),v(n,a.fallos,"n"),v(n,null===a.pct_acierto||void 0===a.pct_acierto?null:a.pct_acierto+" %","n"),v(n,a.ultima_actividad?new Date(a.ultima_actividad).toLocaleString("es-ES"):null),t.appendChild(n)}),o("tabla-informe").hidden=!e.length,o("csv").hidden=!e.length,r("Informe generado.","ok")}}).catch(function(){r("No se pudo conectar.","bad")})},o("csv").onclick=function(){var a=["alumno","bits","exp","insignias","intentos","aciertos","fallos","pct_acierto","ultima_actividad"],n=[a.join(",")].concat(e.map(function(n){return a.map(function(a){return t=null==(e=n[a])?"":String(e),/^[=+\-@\t\r]/.test(t)&&(t="'"+t),'"'+t.replace(/"/g,'""')+'"';var e,t}).join(",")})),o=document.createElement("a");o.href="data:text/csv;charset=utf-8,"+encodeURIComponent("\ufeff"+n.join("\r\n")),o.download="informe_"+t.replace(/[^A-Za-z0-9]+/g,"_")+".csv",document.body.appendChild(o),o.click(),o.remove()},o("cargar-alumnos").onclick=function(){N()},o("cargar-apartados").onclick=function a(){r("Cargando…");var e=_();p("/rest/v1/clases?select=id,nombre",null,n,"GET").then(function(t){if(!E(t)){var c=(t.data||[]).filter(function(a){return a.nombre===e})[0];return c?Promise.all([p("/rest/v1/apartados?select=apartado,bloqueado&clase_id=eq."+c.id,null,n,"GET"),p("/rest/v1/fichas?select=activa&clase_id=eq."+c.id,null,n,"GET")]).then(function(n){var t={};(n[0].data||[]).forEach(function(a){t[a.apartado]=a.bloqueado});var c=!(n[1].data&&n[1].data[0]&&!1===n[1].data[0].activa),i=o("lista-apartados");b(i);var d=m("p");d.appendChild(m("b","Ficha completa: ")),d.appendChild(m("span",c?"activa ":"desactivada ","tag"));var u=m("button",c?"Desactivar ficha":"Activar ficha");u.type="button",u.onclick=function(){h("prof_ficha_activa",{p_clase:e,p_activa:!c}).then(function(n){E(n)||a()})},d.appendChild(u),i.appendChild(d);for(var l=1;l<=8;l++)(function(n){var o=m("p");o.appendChild(m("b","Apartado "+n+": "));var r=!!t[n];o.appendChild(m("span",r?"bloqueado ":"abierto ","tag"));var c=m("button",r?"Desbloquear":"Bloquear");c.type="button",c.onclick=function(){h("prof_apartado",{p_clase:e,p_apartado:n,p_bloquear:!r}).then(function(n){E(n)||a()})},o.appendChild(c),i.appendChild(o)})(l);r("")}):r("No se pudo cargar.","bad")}}).catch(function(){r("No se pudo conectar.","bad")})}}();</script>
+</body>
+</html>

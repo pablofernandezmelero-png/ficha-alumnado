@@ -1,0 +1,12 @@
+name: Integridad
+on: [push, pull_request]
+jobs:
+  huellas:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Las huellas de MANIFEST.sha256 deben coincidir con los archivos
+        run: sha256sum --check MANIFEST.sha256
+      - name: Ningún HTML/JS oficial nuevo sin huella
+        run: |
+          for f in $(git ls-files '*.html' '*.bin' 'fichas/*/js/*.js'); do grep -q " $f\$" MANIFEST.sha256 || { echo "Falta en MANIFEST: $f"; exit 1; }; done
