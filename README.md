@@ -14,6 +14,8 @@
 | 2º Bachillerato J | `fichas/2bach/` | PULSE · Living Well: 8 sesiones (Running on Empty, The Hidden Crew, Germ Wars, Second Chances, Under Pressure, Write to Heal, The Big Exam, Graduation Day) | Unit 2 |
 | 2º SMR B y C | — | Sin ficha de alumno todavía (solo hay secuencia didáctica del profesorado, que no se publica) | Units 5-7 |
 
+Copias de seguridad externas: ver `copias/COPIAS_EXTERNAS.md`.
+
 Dentro de cada carpeta: `content/` o `sessions/` (sesiones) y `media/` (vídeos y audios). **Todo el contenido de las sesiones y todos los vídeos/audios están cifrados (`.bin`, AES-256-GCM)**: no hay ningún mp3/mp4 en claro en el repositorio. El navegador pide la clave de cada sesión a la base de datos solo si el alumno tiene sesión iniciada, pertenece a la clase y el apartado no está bloqueado; descifra en memoria y reproduce sin botón de descarga. Los originales se guardan fuera del repositorio.
 
 ## Contenido de terceros y voces sintéticas
