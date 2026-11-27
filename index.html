@@ -3,26 +3,72 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; connect-src https://kqwatdxzgfrssgcwexvv.supabase.co https://api.pwnedpasswords.com; style-src 'unsafe-inline'; script-src 'unsafe-inline' https://challenges.cloudflare.com; frame-src https://challenges.cloudflare.com; base-uri 'none'; form-action 'none'">
 <title>Portal del alumnado</title>
 <style>
-  :root { color-scheme: light dark; font-family: system-ui, sans-serif; }
-  body { max-width: 26rem; margin: 2rem auto; padding: 0 1rem; }
-  h1 { font-size: 1.4rem; }
-  .tabs { display: flex; gap: .5rem; margin: 1rem 0; }
-  .tabs button { flex: 1; padding: .5rem; cursor: pointer; }
-  .tabs button[aria-selected="true"] { font-weight: 700; border-width: 2px; }
-  label { display: block; margin: .75rem 0 .25rem; font-size: .9rem; }
-  input { width: 100%; padding: .5rem; box-sizing: border-box; font-size: 1rem; }
-  .go { margin-top: 1rem; width: 100%; padding: .65rem; font-size: 1rem; cursor: pointer; }
-  .link { background: none; border: 0; text-decoration: underline; cursor: pointer; font-size: .85rem; padding: .3rem 0; }
-  .msg { margin-top: 1rem; padding: .6rem; border-radius: .4rem; border: 1px solid; }
-  .bad { border-color: #c0392b; } .ok { border-color: #2e8b57; }
-  .small { font-size: .85rem; opacity: .8; }
+  :root {
+    color-scheme: light dark;
+    --papel:#eef1f7; --hoja:#fff; --tinta:#16233f; --tinta2:#4a5878; --linea:#d3d9e8;
+    --margen:#d9534f; --marca:#ffe066; --marcatx:#16233f; --prim:#16233f; --primtx:#fff;
+    --ok:#1f7a4d; --mal:#b3261e; --hover:#fff6c9; --msgok:#e8f5ee; --msgmal:#fdecea;
+    --sans: "Avenir Next","Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+    --serif: "Iowan Old Style","Charter","Palatino Linotype",Georgia,serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --papel:#0d1424; --hoja:#16203a; --tinta:#e9edf7; --tinta2:#a8b3cf; --linea:#2c3858;
+      --margen:#e0706c; --marca:#f2d24b; --marcatx:#10182c; --prim:#e9edf7; --primtx:#10182c;
+      --ok:#6bd79a; --mal:#ff9189; --hover:#26304f; --msgok:#14301f; --msgmal:#3a1a1a; }
+  }
+  * { box-sizing: border-box; }
+  html { background: var(--papel); }
+  body { margin: 0; padding: 2rem 1rem 3rem; font: 1rem/1.5 var(--sans); color: var(--tinta); background: var(--papel); }
+  .hoja { position: relative; max-width: 30rem; margin: 0 auto; background: var(--hoja); border: 1px solid var(--linea);
+    border-radius: 6px; padding: 2rem 2rem 2rem 3.4rem; box-shadow: 0 1px 0 var(--linea); }
+  .hoja::before { content: ""; position: absolute; top: 0; bottom: 0; left: 2.3rem; width: 2px; background: var(--margen); opacity: .55; }
+  h1 { font: 700 1.9rem/1.15 var(--serif); letter-spacing: -.01em; margin: 0 0 1.25rem; }
+  p { margin: .75rem 0; }
+  b { font-weight: 700; }
+  label { display: block; margin: 1rem 0 .3rem; font-size: .9rem; font-weight: 600; }
+  input, select { display: block; width: 100%; max-width: 100%; padding: .6rem .7rem; font: inherit; color: var(--tinta);
+    background: var(--hoja); border: 1px solid var(--tinta2); border-radius: 4px; }
+  input::placeholder { color: var(--tinta2); opacity: .8; }
+  :focus-visible { outline: 3px solid var(--marca); outline-offset: 2px; }
+  input:focus-visible, select:focus-visible { border-color: var(--tinta); }
+  button { font: inherit; cursor: pointer; color: var(--tinta); background: transparent; border: 1px solid var(--tinta); border-radius: 4px;
+    padding: .55rem 1rem; margin: .5rem .5rem 0 0; }
+  button:hover { background: var(--marca); color: var(--marcatx); border-color: var(--marcatx); }
+  button:active { transform: translateY(1px); }
+  .tabs { display: flex; flex-wrap: wrap; gap: .25rem; margin: 0 0 1.25rem; padding: 0; border-bottom: 1px solid var(--linea); }
+  .tabs button { margin: 0; border: 0; border-bottom: 3px solid transparent; border-radius: 4px 4px 0 0; padding: .6rem 1rem; }
+  .tabs button[aria-selected="true"] { background: var(--marca); color: var(--marcatx); font-weight: 700; border-bottom-color: var(--marcatx); }
+  .msg { margin-top: 1.25rem; padding: .7rem .9rem; border: 1px solid var(--tinta2); border-left-width: 5px; border-radius: 4px; background: var(--hoja); }
+  .msg.bad { border-color: var(--mal); background: var(--msgmal); }
+  .msg.ok { border-color: var(--ok); background: var(--msgok); }
+  .small { font-size: .85rem; color: var(--tinta2); }
+  .tag { display: inline-block; font-size: .8rem; padding: .05rem .5rem; border: 1px solid var(--tinta2); border-radius: 999px; }
+  a { color: var(--tinta); text-underline-offset: .2em; text-decoration-thickness: 2px; text-decoration-color: var(--margen); }
+  a:hover { background: var(--marca); color: var(--marcatx); }
+  #captcha { margin-top: 1rem; min-height: 0; }
   [hidden] { display: none !important; }
+  @media (max-width: 560px) {
+    body { padding: 1rem .5rem 2rem; }
+    .hoja { padding: 1.4rem 1rem 1.4rem 2.2rem; }
+    .hoja::before { left: 1.4rem; }
+    h1 { font-size: 1.55rem; }
+  }
+  @media (prefers-reduced-motion: reduce) { button:active { transform: none; } }
+
+  .tabs button { flex: 1; text-align: center; }
+  .go { display: block; width: 100%; margin: 1.25rem 0 0; padding: .75rem 1rem; font-weight: 700; background: var(--prim); color: var(--primtx); border-color: var(--prim); }
+  .go:hover { background: var(--marca); color: var(--marcatx); border-color: var(--marcatx); }
+  .link { background: none; border: 0; padding: .4rem 0; margin: .75rem 0 0; font-size: .9rem; text-decoration: underline; text-decoration-color: var(--margen); text-underline-offset: .2em; text-decoration-thickness: 2px; }
+  .link:hover { background: var(--marca); }
+  #panel p b { font-family: var(--serif); font-size: 1.15rem; }
 </style>
 </head>
 <body>
+<main class="hoja">
 <h1>Portal del alumnado</h1>
 <section id="login">
   <div class="tabs" role="tablist">
@@ -63,6 +109,7 @@
   <button class="go" id="salir" type="button">Cerrar sesión</button>
 </section>
 <div id="msg" class="msg" hidden role="status"></div>
+</main>
 <script>!function(){"use strict";if("https://pablofernandezmelero-png.github.io"!==location.origin||window.top!==window.self)throw document.body.textContent="Esta no es la web oficial.",new Error("origen");var e="sb_publishable_pD45Pp03c048X22Dqfmthg_6-OdU5oO",t="fa_session",n="ent",a=function(e){return document.getElementById(e)};function r(e,t){var n=a("msg");n.textContent=e||"",n.className="msg "+(t||""),n.hidden=!e}var o="0x4AAAAAAGWADCbQT_Q1M6fK",c=null,i=[6e4,3e5,9e5,36e5];function s(e){var t={n:0,hasta:0,r:0};function n(e){e&&"object"==typeof e&&(t.n=Math.max(t.n,0|e.n),t.hasta=Math.max(t.hasta,+e.hasta||0),t.r=Math.max(t.r,0|e.r))}n(c);try{n(JSON.parse(localStorage.getItem(e)))}catch(e){}try{n(JSON.parse(sessionStorage.getItem(e)))}catch(e){}try{var a=document.cookie.match(new RegExp("(?:^|; )"+e+"=([^;]*)"));a&&n(JSON.parse(decodeURIComponent(a[1])))}catch(e){}try{0===window.name.indexOf(e+"=")&&n(JSON.parse(window.name.slice(e.length+1)))}catch(e){}return t}function u(e,t){c=t;var n=JSON.stringify(t);try{localStorage.setItem(e,n)}catch(e){}try{sessionStorage.setItem(e,n)}catch(e){}try{document.cookie=e+"="+encodeURIComponent(n)+"; max-age=86400; path=/; SameSite=Strict; Secure"}catch(e){}try{window.name=e+"="+n}catch(e){}}var l=null,d=null;function f(e){return o&&(e.gotrue_meta_security={captcha_token:l}),e}function h(){return!(o&&!l&&(r("Completa la verificación de seguridad.","bad"),1))}function p(){if(l=null,o&&window.turnstile&&null!==d)try{window.turnstile.reset(d)}catch(e){}}!function(){var e=document.getElementById("captcha");if(e){var t=document.createElement("script");t.src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit",t.async=!0,t.onload=function(){d=window.turnstile.render(e,{sitekey:o,callback:function(e){l=e},"expired-callback":function(){l=null}})},document.head.appendChild(t)}}();var m=["1234567890","contrasena1","contraseña1","password12","password123","qwertyuiop","abcdefghij","0123456789","iloveyou12","administrador"];function v(e,t){if(e.length<10)return Promise.resolve("La contraseña debe tener al menos 10 caracteres.");if(!/[a-z]/.test(e)||!/[A-Z]/.test(e)||!/[0-9]/.test(e))return Promise.resolve("Usa mayúsculas, minúsculas y números.");var n,a=e.toLowerCase(),r=String(t||"").split("@")[0].toLowerCase();return m.some(function(e){return-1!==a.indexOf(e)})||r.length>=4&&-1!==a.indexOf(r)?Promise.resolve("Esa contraseña es demasiado fácil de adivinar. Elige otra."):(n=e,crypto.subtle.digest("SHA-1",(new TextEncoder).encode(n)).then(function(e){return Array.prototype.map.call(new Uint8Array(e),function(e){return("0"+e.toString(16)).slice(-2)}).join("").toUpperCase()})).then(function(e){return fetch("https://api.pwnedpasswords.com/range/"+e.slice(0,5)).then(function(e){return e.text()}).then(function(t){return t.split("\n").some(function(t){var n=t.trim().split(":");return n[0]===e.slice(5)&&parseInt(n[1],10)>0})?"Esa contraseña ha aparecido en filtraciones de datos. Elige otra distinta.":null})}).catch(function(){return null})}function g(e){var t=new Error(e);return t.visible=!0,t}function b(t,n,a){n=n||{};var r={apikey:e,"Content-Type":"application/json",Authorization:"Bearer "+(a||e)};return fetch("https://kqwatdxzgfrssgcwexvv.supabase.co"+t,{method:n.method||"POST",headers:r,body:n.body?JSON.stringify(n.body):void 0}).then(function(e){return e.json().catch(function(){return{}}).then(function(t){return{ok:e.ok,status:e.status,data:t}})})}function y(e){try{localStorage.setItem(t,JSON.stringify({access_token:e.access_token,refresh_token:e.refresh_token,expires_at:e.expires_at}))}catch(e){}}function w(){try{return JSON.parse(localStorage.getItem(t)||"null")}catch(e){return null}}function k(){try{localStorage.removeItem(t)}catch(e){}}var _="fa_bloqueo";function S(){return(e=s(_)).hasta>Date.now()?Math.ceil((e.hasta-Date.now())/1e3):0;var e}function E(e){["login","nueva","clase","panel"].forEach(function(t){a(t).hidden=t!==e})}function x(e){n=e,a("tab-ent").setAttribute("aria-selected","ent"===e),a("tab-reg").setAttribute("aria-selected","reg"===e),a("go").textContent="reg"===e?"Crear cuenta":"Entrar",a("ayuda-clave").hidden="reg"!==e,a("olvide").hidden="reg"===e,a("f-clave").setAttribute("autocomplete","reg"===e?"new-password":"current-password"),r("")}function C(e){return b("/rest/v1/rpc/mi_clase",{body:{}},e).then(function(t){return a("p-clase").textContent=String(t.data),b("/rest/v1/rpc/mi_perfil",{body:{}},e).then(function(t){try{t.ok&&t.data&&localStorage.setItem("fa_perfil",JSON.stringify(t.data))}catch(e){}return b("/rest/v1/fichas?select=titulo,url",{method:"GET"},e)})}).then(function(e){var t=Array.isArray(e.data)&&e.data[0];a("p-ficha").textContent=t?t.titulo:"—";var n=t&&t.url&&/^https:\/\//.test(t.url);a("p-enlace-box").hidden=!n,a("p-sin-enlace").hidden=!!n,n&&(a("p-enlace").href=t.url),E("panel"),r("")})}a("tab-ent").onclick=function(){x("ent")},a("tab-reg").onclick=function(){x("reg")};var A=null;function I(e){return A=e,b("/rest/v1/rpc/mi_clase",{body:{}},e).then(function(t){if(t.ok&&t.data)return C(e);E("clase"),r("")})}function N(){var e=w();e&&e.access_token&&b("/auth/v1/logout",{},e.access_token).catch(function(){}),k();try{localStorage.removeItem("fa_perfil")}catch(e){}location.reload()}a("go").onclick=function(){var e=a("f-correo").value.trim().toLowerCase(),t=a("f-clave").value;if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e))return r("Escribe un correo válido.","bad");if(!t)return r("Escribe tu contraseña.","bad");if(h()){var o;if(a("go").disabled=!0,r("Un momento…"),"reg"===n){var c=encodeURIComponent(location.origin+location.pathname);o=v(t,e).then(function(n){if(n)throw g(n);return b("/auth/v1/signup?redirect_to="+c,{body:f({email:e,password:t})})}).then(function(e){if(!e.ok)throw g("No se pudo crear la cuenta. Si ya tienes una, usa «Entrar».");if(e.data.access_token)return y(e.data),I(e.data.access_token);a("f-clave").value="",x("ent"),r("Cuenta creada. Revisa tu correo y confirma tu dirección. Después entra con tu correo y tu contraseña.","ok")})}else{var l=S();if(l)return a("go").disabled=!1,r("Demasiados intentos. Espera "+l+" segundos.","bad");o=function(e,t){return b("/auth/v1/token?grant_type=password",{body:f({email:e,password:t})}).then(function(e){if(!e.ok||!e.data.access_token){if(function(){var e,t;(t=s(e=_)).hasta&&t.hasta<=Date.now()&&(t={n:0,hasta:0,r:t.r}),t.n+=1,t.n>=3&&(t={n:0,hasta:Date.now()+i[Math.min(t.r,3)],r:t.r+1}),u(e,t)}(),S())throw g("Demasiados intentos. Espera "+S()+" segundos antes de volver a probar.");throw g("Correo o contraseña incorrectos, o el correo aún no está confirmado.")}return u(_,{n:0,hasta:0,r:0}),y(e.data),I(e.data.access_token)})}(e,t)}o.catch(function(e){r(e&&e.visible?e.message:"Algo ha fallado. Inténtalo de nuevo.","bad")}).then(function(){a("go").disabled=!1,a("f-clave").value="",p()})}},a("unir").onclick=function(){var e,t=(e=a("f-codigo").value,String(e||"").toUpperCase().replace(/[^A-Z0-9]/g,"")),n=a("f-nombre").value.trim();return n.length<2?r("Escribe tu nombre.","bad"):t.length<8?r("Escribe el código de clase.","bad"):(a("unir").disabled=!0,r("Un momento…"),void b("/rest/v1/rpc/canjear_codigo",{body:{p_codigo:t,p_nombre:n}},A).then(function(e){if(!e.ok||!e.data||!0!==e.data.ok)throw g(e.data&&e.data.mensaje||"No se pudo usar ese código.");return C(A)}).catch(function(e){r(e&&e.visible?e.message:"Algo ha fallado. Inténtalo de nuevo.","bad")}).then(function(){a("unir").disabled=!1}))},a("olvide").onclick=function(){var e=a("f-correo").value.trim().toLowerCase();if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e))return r("Escribe tu correo arriba y vuelve a pulsar.","bad");h()&&b("/auth/v1/recover?redirect_to="+encodeURIComponent(location.origin+location.pathname),{body:f({email:e})}).then(function(){p(),r("Si ese correo tiene cuenta, te hemos enviado un enlace para cambiar la contraseña.","ok")}).catch(function(){r("No se pudo enviar. Inténtalo más tarde.","bad")})},a("salir").onclick=N,a("salir2").onclick=N;var O=null;!function(){var e=new URLSearchParams((location.hash||"").replace(/^#/,""));if(e.get("access_token")&&"recovery"!==e.get("type"))try{history.replaceState(null,"",location.pathname)}catch(e){}if("recovery"===e.get("type")&&e.get("access_token")){O=e.get("access_token");try{history.replaceState(null,"",location.pathname)}catch(e){}E("nueva")}}(),a("guardar-nueva").onclick=function(){var e=a("n1").value,t=a("n2").value;if(e!==t)return r("Las dos contraseñas no coinciden.","bad");v(e,"").then(function(t){return t?(r(t,"bad"),null):b("/auth/v1/user",{method:"PUT",body:{password:e}},O)}).then(function(e){if(e){if(a("n1").value="",a("n2").value="",!e.ok)return r(e.data&&(e.data.msg||e.data.message)||"No se pudo cambiar. Pide un enlace nuevo.","bad");O=null,E("login"),r("Contraseña cambiada. Ya puedes entrar.","ok")}}).catch(function(){r("No se pudo conectar.","bad")})},function(){if(!O){var e=w();e&&e.refresh_token&&(r("Entrando…"),b("/auth/v1/token?grant_type=refresh_token",{body:{refresh_token:e.refresh_token}}).then(function(e){return e.ok&&e.data.access_token?(y(e.data),I(e.data.access_token)):(k(),void r(""))}).catch(function(){r("")}))}}()}();</script>
 </body>
 </html>
