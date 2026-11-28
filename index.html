@@ -3,27 +3,79 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; connect-src https://kqwatdxzgfrssgcwexvv.supabase.co https://api.pwnedpasswords.com; style-src 'unsafe-inline'; script-src 'unsafe-inline' https://challenges.cloudflare.com; frame-src https://challenges.cloudflare.com; base-uri 'none'; form-action 'none'">
 <title>Portal del alumnado</title>
 <style>
-  :root { color-scheme: light dark; font-family: system-ui, sans-serif; }
-  body { max-width: 26rem; margin: 2rem auto; padding: 0 1rem; }
-  h1 { font-size: 1.4rem; }
-  .tabs { display: flex; gap: .5rem; margin: 1rem 0; }
-  .tabs button { flex: 1; padding: .5rem; cursor: pointer; }
-  .tabs button[aria-selected="true"] { font-weight: 700; border-width: 2px; }
-  label { display: block; margin: .75rem 0 .25rem; font-size: .9rem; }
-  input { width: 100%; padding: .5rem; box-sizing: border-box; font-size: 1rem; }
-  .go { margin-top: 1rem; width: 100%; padding: .65rem; font-size: 1rem; cursor: pointer; }
-  .link { background: none; border: 0; text-decoration: underline; cursor: pointer; font-size: .85rem; padding: .3rem 0; }
-  .msg { margin-top: 1rem; padding: .6rem; border-radius: .4rem; border: 1px solid; }
-  .bad { border-color: #c0392b; } .ok { border-color: #2e8b57; }
-  .small { font-size: .85rem; opacity: .8; }
+  :root {
+    color-scheme: light dark;
+    --fondo:#eef1f5; --hoja:#fff; --tinta:#14202e; --tinta2:#55637a; --linea:#d9dee7; --suave:#f3f5f8;
+    --prim:#0f4a53; --prim2:#0b3a41; --primtx:#fff; --oro:#c6962c; --foco:#e8b94a;
+    --ok:#1b6e45; --mal:#a8281f; --msgok:#e9f5ee; --msgmal:#fceeec; --banda:linear-gradient(135deg,#0f4a53,#0b3a41); --bandatx:#fff; --bandatx2:rgba(255,255,255,.78);
+    --sans: "Avenir Next","Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+    --serif: "Iowan Old Style","Charter","Palatino Linotype",Georgia,serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --fondo:#0c131b; --hoja:#16202b; --tinta:#e8edf3; --tinta2:#a4b0c2; --linea:#2a3646; --suave:#1c2835;
+      --prim:#7fd1c7; --prim2:#a4e2da; --primtx:#0c1f22; --oro:#e0b24a; --foco:#e0b24a;
+      --ok:#6bd79a; --mal:#ff9189; --msgok:#13301f; --msgmal:#381a19; --banda:linear-gradient(135deg,#12363c,#0d2a2f); }
+  }
+  * { box-sizing: border-box; }
+  html { background: var(--fondo); }
+  body { margin: 0; padding: 2.5rem 1rem 3.5rem; font: 1rem/1.55 var(--sans); color: var(--tinta); background: var(--fondo); }
+  .hoja { --px: 2.4rem; position: relative; max-width: 34rem; margin: 0 auto; background: var(--hoja); border: 1px solid var(--linea);
+    border-radius: 12px; padding: 0 var(--px) 2.4rem; overflow: hidden; box-shadow: 0 1px 2px rgba(15,30,45,.06), 0 18px 36px -22px rgba(15,30,45,.35); }
+  .cab { position: relative; margin: 0 calc(-1 * var(--px)) 1.8rem; padding: 2.1rem var(--px) 1.7rem; background: var(--banda); color: var(--bandatx); border-bottom: 4px solid var(--oro); overflow: hidden; }
+  .cab > * { position: relative; }
+  h1 { font: 700 2rem/1.15 var(--serif); letter-spacing: -.01em; margin: 0; color: var(--bandatx); }
+  .sub { margin: .5rem 0 0; font-size: .98rem; color: var(--bandatx2); max-width: 36rem; }
+  .cab .libro { position: absolute; right: -.5rem; top: 50%; width: 10.5rem; height: auto; transform: translateY(-50%); color: #fff; opacity: .13; pointer-events: none; }
+  p { margin: .8rem 0; }
+  b { font-weight: 650; }
+  label { display: block; margin: 1.15rem 0 .35rem; font-size: .88rem; font-weight: 600; color: var(--tinta); }
+  input, select { display: block; width: 100%; max-width: 100%; padding: .7rem .85rem; font: inherit; color: var(--tinta);
+    background: var(--hoja); border: 1px solid #a7b1c1; border-radius: 8px; }
+  input::placeholder { color: var(--tinta2); opacity: .85; }
+  :focus-visible { outline: 3px solid var(--foco); outline-offset: 2px; }
+  input:focus-visible, select:focus-visible { border-color: var(--prim); }
+  button { font: inherit; font-size: .95rem; cursor: pointer; color: var(--prim); background: transparent; border: 1px solid var(--prim); border-radius: 8px;
+    padding: .55rem 1.05rem; margin: .5rem .5rem 0 0; transition: background-color .15s, color .15s, border-color .15s; }
+  button:hover { background: var(--suave); border-color: var(--prim2); color: var(--prim2); }
+  button:active { transform: translateY(1px); }
+  .tabs { display: flex; flex-wrap: wrap; align-items: flex-end; gap: .25rem; margin: 0 0 1.5rem; border-bottom: 1px solid var(--linea); }
+  .tabs button { margin: 0 0 -1px; border: 0; border-bottom: 3px solid transparent; border-radius: 0; background: transparent; color: var(--tinta2); padding: .7rem 1.05rem .65rem; font-weight: 500; }
+  .tabs button:hover { background: var(--suave); color: var(--tinta); }
+  .tabs button[aria-selected="true"] { color: var(--prim); font-weight: 650; border-bottom-color: var(--oro); }
+  .msg { margin-top: 1.4rem; padding: .8rem 1rem; border: 1px solid var(--linea); border-left: 5px solid var(--tinta2); border-radius: 8px; background: var(--suave); }
+  .msg.bad { border-left-color: var(--mal); background: var(--msgmal); }
+  .msg.ok { border-left-color: var(--ok); background: var(--msgok); }
+  .small { font-size: .85rem; color: var(--tinta2); }
+  .tag { display: inline-block; font-size: .8rem; padding: .1rem .6rem; border: 1px solid var(--linea); border-radius: 999px; background: var(--suave); color: var(--tinta); }
+  a { color: var(--prim); text-underline-offset: .2em; text-decoration-thickness: 1.5px; }
+  a:hover { color: var(--prim2); text-decoration-color: var(--oro); }
+  #captcha { margin-top: 1rem; min-height: 0; }
   [hidden] { display: none !important; }
+  @media (max-width: 600px) {
+    body { padding: 1rem .5rem 2rem; }
+    .hoja { --px: 1.2rem; }
+    .cab { padding-top: 1.6rem; padding-bottom: 1.3rem; }
+    .cab .libro { width: 7rem; right: -1rem; }
+    h1 { font-size: 1.6rem; }
+  }
+  @media (prefers-reduced-motion: reduce) { button { transition: none; } button:active { transform: none; } }
+
+  .tabs button { flex: 1; text-align: center; }
+  .go { display: block; width: 100%; margin: 1.4rem 0 0; padding: .8rem 1rem; font-weight: 650; background: var(--prim); color: var(--primtx); border-color: var(--prim); }
+  .go:hover { background: var(--prim2); border-color: var(--prim2); color: var(--primtx); }
+  .link { background: none; border: 0; padding: .4rem 0; margin: .8rem 0 0; font-size: .9rem; color: var(--prim); text-decoration: underline; text-underline-offset: .2em; }
+  .link:hover { background: none; color: var(--prim2); text-decoration-color: var(--oro); }
+  #panel p b { font-family: var(--serif); font-size: 1.2rem; }
 </style>
 </head>
 <body>
-<h1>Portal del alumnado</h1>
+<main class="hoja">
+<header class="cab"><svg class="libro" viewBox="0 0 120 90" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M60 22C46 13 24 13 8 19v57c16-6 38-6 52 2z"/><path d="M60 22c14-9 36-9 52-3v57c-16-6-38-6-52 2z"/><path d="M60 22v56"/><path d="M20 32c9-2 20-1 30 4M20 45c9-2 20-1 30 4M70 36c10-5 21-6 30-4M70 49c10-5 21-6 30-4"/></svg><h1>Portal del alumnado</h1>
+<p class="sub">Accede con tu correo para abrir la ficha de tu clase.</p></header>
 <section id="login">
   <div class="tabs" role="tablist">
     <button id="tab-ent" role="tab" aria-selected="true" type="button">Entrar</button>
@@ -63,6 +115,7 @@
   <button class="go" id="salir" type="button">Cerrar sesión</button>
 </section>
 <div id="msg" class="msg" hidden role="status"></div>
+</main>
 <script>!function(){"use strict";if("https://pablofernandezmelero-png.github.io"!==location.origin||window.top!==window.self)throw document.body.textContent="Esta no es la web oficial.",new Error("origen");var e="sb_publishable_pD45Pp03c048X22Dqfmthg_6-OdU5oO",t="fa_session",n="ent",a=function(e){return document.getElementById(e)};function r(e,t){var n=a("msg");n.textContent=e||"",n.className="msg "+(t||""),n.hidden=!e}var o="0x4AAAAAAGWADCbQT_Q1M6fK",c=null,i=[6e4,3e5,9e5,36e5];function s(e){var t={n:0,hasta:0,r:0};function n(e){e&&"object"==typeof e&&(t.n=Math.max(t.n,0|e.n),t.hasta=Math.max(t.hasta,+e.hasta||0),t.r=Math.max(t.r,0|e.r))}n(c);try{n(JSON.parse(localStorage.getItem(e)))}catch(e){}try{n(JSON.parse(sessionStorage.getItem(e)))}catch(e){}try{var a=document.cookie.match(new RegExp("(?:^|; )"+e+"=([^;]*)"));a&&n(JSON.parse(decodeURIComponent(a[1])))}catch(e){}try{0===window.name.indexOf(e+"=")&&n(JSON.parse(window.name.slice(e.length+1)))}catch(e){}return t}function u(e,t){c=t;var n=JSON.stringify(t);try{localStorage.setItem(e,n)}catch(e){}try{sessionStorage.setItem(e,n)}catch(e){}try{document.cookie=e+"="+encodeURIComponent(n)+"; max-age=86400; path=/; SameSite=Strict; Secure"}catch(e){}try{window.name=e+"="+n}catch(e){}}var l=null,d=null;function f(e){return o&&(e.gotrue_meta_security={captcha_token:l}),e}function h(){return!(o&&!l&&(r("Completa la verificación de seguridad.","bad"),1))}function p(){if(l=null,o&&window.turnstile&&null!==d)try{window.turnstile.reset(d)}catch(e){}}!function(){var e=document.getElementById("captcha");if(e){var t=document.createElement("script");t.src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit",t.async=!0,t.onload=function(){d=window.turnstile.render(e,{sitekey:o,callback:function(e){l=e},"expired-callback":function(){l=null}})},document.head.appendChild(t)}}();var m=["1234567890","contrasena1","contraseña1","password12","password123","qwertyuiop","abcdefghij","0123456789","iloveyou12","administrador"];function v(e,t){if(e.length<10)return Promise.resolve("La contraseña debe tener al menos 10 caracteres.");if(!/[a-z]/.test(e)||!/[A-Z]/.test(e)||!/[0-9]/.test(e))return Promise.resolve("Usa mayúsculas, minúsculas y números.");var n,a=e.toLowerCase(),r=String(t||"").split("@")[0].toLowerCase();return m.some(function(e){return-1!==a.indexOf(e)})||r.length>=4&&-1!==a.indexOf(r)?Promise.resolve("Esa contraseña es demasiado fácil de adivinar. Elige otra."):(n=e,crypto.subtle.digest("SHA-1",(new TextEncoder).encode(n)).then(function(e){return Array.prototype.map.call(new Uint8Array(e),function(e){return("0"+e.toString(16)).slice(-2)}).join("").toUpperCase()})).then(function(e){return fetch("https://api.pwnedpasswords.com/range/"+e.slice(0,5)).then(function(e){return e.text()}).then(function(t){return t.split("\n").some(function(t){var n=t.trim().split(":");return n[0]===e.slice(5)&&parseInt(n[1],10)>0})?"Esa contraseña ha aparecido en filtraciones de datos. Elige otra distinta.":null})}).catch(function(){return null})}function g(e){var t=new Error(e);return t.visible=!0,t}function b(t,n,a){n=n||{};var r={apikey:e,"Content-Type":"application/json",Authorization:"Bearer "+(a||e)};return fetch("https://kqwatdxzgfrssgcwexvv.supabase.co"+t,{method:n.method||"POST",headers:r,body:n.body?JSON.stringify(n.body):void 0}).then(function(e){return e.json().catch(function(){return{}}).then(function(t){return{ok:e.ok,status:e.status,data:t}})})}function y(e){try{localStorage.setItem(t,JSON.stringify({access_token:e.access_token,refresh_token:e.refresh_token,expires_at:e.expires_at}))}catch(e){}}function w(){try{return JSON.parse(localStorage.getItem(t)||"null")}catch(e){return null}}function k(){try{localStorage.removeItem(t)}catch(e){}}var _="fa_bloqueo";function S(){return(e=s(_)).hasta>Date.now()?Math.ceil((e.hasta-Date.now())/1e3):0;var e}function E(e){["login","nueva","clase","panel"].forEach(function(t){a(t).hidden=t!==e})}function x(e){n=e,a("tab-ent").setAttribute("aria-selected","ent"===e),a("tab-reg").setAttribute("aria-selected","reg"===e),a("go").textContent="reg"===e?"Crear cuenta":"Entrar",a("ayuda-clave").hidden="reg"!==e,a("olvide").hidden="reg"===e,a("f-clave").setAttribute("autocomplete","reg"===e?"new-password":"current-password"),r("")}function C(e){return b("/rest/v1/rpc/mi_clase",{body:{}},e).then(function(t){return a("p-clase").textContent=String(t.data),b("/rest/v1/rpc/mi_perfil",{body:{}},e).then(function(t){try{t.ok&&t.data&&localStorage.setItem("fa_perfil",JSON.stringify(t.data))}catch(e){}return b("/rest/v1/fichas?select=titulo,url",{method:"GET"},e)})}).then(function(e){var t=Array.isArray(e.data)&&e.data[0];a("p-ficha").textContent=t?t.titulo:"—";var n=t&&t.url&&/^https:\/\//.test(t.url);a("p-enlace-box").hidden=!n,a("p-sin-enlace").hidden=!!n,n&&(a("p-enlace").href=t.url),E("panel"),r("")})}a("tab-ent").onclick=function(){x("ent")},a("tab-reg").onclick=function(){x("reg")};var A=null;function I(e){return A=e,b("/rest/v1/rpc/mi_clase",{body:{}},e).then(function(t){if(t.ok&&t.data)return C(e);E("clase"),r("")})}function N(){var e=w();e&&e.access_token&&b("/auth/v1/logout",{},e.access_token).catch(function(){}),k();try{localStorage.removeItem("fa_perfil")}catch(e){}location.reload()}a("go").onclick=function(){var e=a("f-correo").value.trim().toLowerCase(),t=a("f-clave").value;if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e))return r("Escribe un correo válido.","bad");if(!t)return r("Escribe tu contraseña.","bad");if(h()){var o;if(a("go").disabled=!0,r("Un momento…"),"reg"===n){var c=encodeURIComponent(location.origin+location.pathname);o=v(t,e).then(function(n){if(n)throw g(n);return b("/auth/v1/signup?redirect_to="+c,{body:f({email:e,password:t})})}).then(function(e){if(!e.ok)throw g("No se pudo crear la cuenta. Si ya tienes una, usa «Entrar».");if(e.data.access_token)return y(e.data),I(e.data.access_token);a("f-clave").value="",x("ent"),r("Cuenta creada. Revisa tu correo y confirma tu dirección. Después entra con tu correo y tu contraseña.","ok")})}else{var l=S();if(l)return a("go").disabled=!1,r("Demasiados intentos. Espera "+l+" segundos.","bad");o=function(e,t){return b("/auth/v1/token?grant_type=password",{body:f({email:e,password:t})}).then(function(e){if(!e.ok||!e.data.access_token){if(function(){var e,t;(t=s(e=_)).hasta&&t.hasta<=Date.now()&&(t={n:0,hasta:0,r:t.r}),t.n+=1,t.n>=3&&(t={n:0,hasta:Date.now()+i[Math.min(t.r,3)],r:t.r+1}),u(e,t)}(),S())throw g("Demasiados intentos. Espera "+S()+" segundos antes de volver a probar.");throw g("Correo o contraseña incorrectos, o el correo aún no está confirmado.")}return u(_,{n:0,hasta:0,r:0}),y(e.data),I(e.data.access_token)})}(e,t)}o.catch(function(e){r(e&&e.visible?e.message:"Algo ha fallado. Inténtalo de nuevo.","bad")}).then(function(){a("go").disabled=!1,a("f-clave").value="",p()})}},a("unir").onclick=function(){var e,t=(e=a("f-codigo").value,String(e||"").toUpperCase().replace(/[^A-Z0-9]/g,"")),n=a("f-nombre").value.trim();return n.length<2?r("Escribe tu nombre.","bad"):t.length<8?r("Escribe el código de clase.","bad"):(a("unir").disabled=!0,r("Un momento…"),void b("/rest/v1/rpc/canjear_codigo",{body:{p_codigo:t,p_nombre:n}},A).then(function(e){if(!e.ok||!e.data||!0!==e.data.ok)throw g(e.data&&e.data.mensaje||"No se pudo usar ese código.");return C(A)}).catch(function(e){r(e&&e.visible?e.message:"Algo ha fallado. Inténtalo de nuevo.","bad")}).then(function(){a("unir").disabled=!1}))},a("olvide").onclick=function(){var e=a("f-correo").value.trim().toLowerCase();if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e))return r("Escribe tu correo arriba y vuelve a pulsar.","bad");h()&&b("/auth/v1/recover?redirect_to="+encodeURIComponent(location.origin+location.pathname),{body:f({email:e})}).then(function(){p(),r("Si ese correo tiene cuenta, te hemos enviado un enlace para cambiar la contraseña.","ok")}).catch(function(){r("No se pudo enviar. Inténtalo más tarde.","bad")})},a("salir").onclick=N,a("salir2").onclick=N;var O=null;!function(){var e=new URLSearchParams((location.hash||"").replace(/^#/,""));if(e.get("access_token")&&"recovery"!==e.get("type"))try{history.replaceState(null,"",location.pathname)}catch(e){}if("recovery"===e.get("type")&&e.get("access_token")){O=e.get("access_token");try{history.replaceState(null,"",location.pathname)}catch(e){}E("nueva")}}(),a("guardar-nueva").onclick=function(){var e=a("n1").value,t=a("n2").value;if(e!==t)return r("Las dos contraseñas no coinciden.","bad");v(e,"").then(function(t){return t?(r(t,"bad"),null):b("/auth/v1/user",{method:"PUT",body:{password:e}},O)}).then(function(e){if(e){if(a("n1").value="",a("n2").value="",!e.ok)return r(e.data&&(e.data.msg||e.data.message)||"No se pudo cambiar. Pide un enlace nuevo.","bad");O=null,E("login"),r("Contraseña cambiada. Ya puedes entrar.","ok")}}).catch(function(){r("No se pudo conectar.","bad")})},function(){if(!O){var e=w();e&&e.refresh_token&&(r("Entrando…"),b("/auth/v1/token?grant_type=refresh_token",{body:{refresh_token:e.refresh_token}}).then(function(e){return e.ok&&e.data.access_token?(y(e.data),I(e.data.access_token)):(k(),void r(""))}).catch(function(){r("")}))}}()}();</script>
 </body>
 </html>
