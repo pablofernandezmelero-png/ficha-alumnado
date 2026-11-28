@@ -98,12 +98,33 @@
     body:has(#s-login:not([hidden]), #s-crear:not([hidden]), #s-confirm:not([hidden]), #s-codigo:not([hidden])) { min-height: 100vh; display: flex; align-items: center; padding-block: 2rem; }
     .hoja.dividida, .hoja.ds { width: 100%; }
   }
+
+  .cab .pasos, .cab .aviso, .guia { display: none; }
+  @media (min-width: 900px) {
+    :is(.hoja.dividida, .hoja.ds:not(:has(#s-panel:not([hidden])))) .cab .pasos { display: block; list-style: none; counter-reset: p; margin: 2rem 0 0; padding: 1.4rem 0 0; border-top: 1px solid rgba(255,255,255,.2); }
+    :is(.hoja.dividida, .hoja.ds:not(:has(#s-panel:not([hidden])))) .cab .pasos li { counter-increment: p; position: relative; padding: 0 0 .95rem 2.5rem; font-size: .93rem; line-height: 1.45; color: var(--bandatx2); }
+    :is(.hoja.dividida, .hoja.ds:not(:has(#s-panel:not([hidden])))) .cab .pasos li::before { content: counter(p); position: absolute; left: 0; top: -.05rem; width: 1.65rem; height: 1.65rem; display: grid; place-items: center; border: 1.5px solid var(--oro); border-radius: 50%; color: #f1d58b; font-size: .8rem; font-weight: 650; }
+    :is(.hoja.dividida, .hoja.ds:not(:has(#s-panel:not([hidden])))) .cab .aviso { display: block; margin: .5rem 0 0; max-width: 30rem; font-size: .82rem; line-height: 1.45; color: rgba(255,255,255,.62); }
+  }
+  @media (min-width: 1200px) {
+    .hoja.ds #s-panel { display: grid; grid-template-columns: minmax(0, 1fr) 19.5rem; column-gap: 2.4rem; align-items: start; }
+    .hoja.ds #s-panel > .tabs { grid-column: 1 / -1; }
+    .hoja.ds #s-panel > *:not(.guia):not(.tabs) { grid-column: 1; }
+    .hoja.ds #s-panel > .guia { display: block; grid-column: 2; grid-row: 2 / span 8; background: var(--suave); border: 1px solid var(--linea); border-radius: 10px; padding: 1.3rem 1.4rem 1.5rem; font-size: .9rem; line-height: 1.5; }
+    .guia h2 { margin: 0; font: 700 1.1rem/1.3 var(--serif); }
+    .guia dl { margin: 0; }
+    .guia dt { margin-top: 1rem; font-weight: 650; color: var(--prim); }
+    .guia dd { margin: .15rem 0 0; color: var(--tinta2); }
+    .guia .nota { margin: 1.2rem 0 0; padding-top: 1rem; border-top: 1px solid var(--linea); font-size: .85rem; color: var(--tinta2); }
+  }
 </style>
 </head>
 <body>
 <main class="hoja ds">
 <header class="cab"><svg class="libro" viewBox="0 0 120 90" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M60 22C46 13 24 13 8 19v57c16-6 38-6 52 2z"/><path d="M60 22c14-9 36-9 52-3v57c-16-6-38-6-52 2z"/><path d="M60 22v56"/><path d="M20 32c9-2 20-1 30 4M20 45c9-2 20-1 30 4M70 36c10-5 21-6 30-4M70 49c10-5 21-6 30-4"/></svg><h1>Panel del profesorado</h1>
-<p class="sub">Informes, alumnos y apartados de cada clase.</p></header>
+<p class="sub">Informes, alumnos y apartados de cada clase.</p>
+<ol class="pasos"><li>Entra con tu correo y contraseña de profesor.</li><li>Introduce tu código de profesor.</li><li>Elige una clase y consulta informes, alumnos y apartados.</li></ol>
+<p class="aviso">No compartas tu código de profesor ni tu clave de confirmación.</p></header>
 <div class="cuerpo">
 
 <section id="s-login">
@@ -186,6 +207,7 @@
     <div id="lista-apartados"></div>
     <p class="small">Un apartado bloqueado impide guardar en esa sesión. Si desactivas la ficha completa, nadie de la clase puede verla ni guardar.</p>
   </div>
+  <aside class="guia" aria-label="Guía rápida"><h2>Guía rápida</h2><dl><dt>Informe</dt><dd>Resumen de la clase con bits, EXP y aciertos por alumno.</dd><dt>Alumnos</dt><dd>Bloquear impide ver la ficha y guardar. Eliminar borra la cuenta y su trabajo, y no se puede deshacer.</dd><dt>Apartados</dt><dd>Bloquea apartados concretos o desactiva la ficha completa de la clase.</dd><dt>XP por día</dt><dd>XP guardada cada día al pulsar Save, con un máximo de 1.500 al día.</dd></dl></aside>
 </section>
 
 <div id="msg" class="msg" hidden role="status"></div>
